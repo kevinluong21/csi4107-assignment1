@@ -156,7 +156,7 @@ class InvertedIndex:
     def __init__(self):
         self.index = defaultdict(lambda: defaultdict(int)) #term -> doc_id -> frequency
     
-    def add_documents(self, doc_id: int, term: dict):
+    def add_documents(self, doc_id: int, terms: dict):
         ''' Add document's terms to the inverted index.
         Parameters:
         doc_id (int): ID of the document
