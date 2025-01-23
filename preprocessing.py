@@ -151,49 +151,4 @@ class Document:
     def __repr__(self):
         return f"Document(id={self._id}, title={self.title}, text={self.text}, index={self.index}, metadata={self.metadata})"
 
-class InvertedIndex:
-
-    def __init__(self):
-        self.index = defaultdict(lambda: defaultdict(int)) #term -> doc_id -> frequency
-    
-    def add_documents(self, doc_id: int, terms: dict):
-        ''' Add document's terms to the inverted index.
-        Parameters:
-        doc_id (int): ID of the document
-        terms (dict): the dictionary of terms with their frequencies'''
-
-        for term, freq in terms.items():
-            self.index[term][doc_id] += 1
-
-    def get_postings(self, term: str):
-        '''Get postings list for a term.
-        Posting refers to an entry in the index that indicates the documents where a term appears, along with term frequency
-
-        term (str): term obtained from tokenization step 
-
-        Returns:
-            dict: a dictionary of document IDs and their term frequencies
-        '''
-
-        return self.index.get(term, {})
-
-    def __repr__(self):
-        return f"InvertedIndex(index={dict(self.index)})"
-    
-    def create_inverted_index(documents):
-        '''Create an inverted index from a list of documents.
-
-        Parameters:
-            documents (list): The list of documents
-
-        Returns:
-            The dictionary of inverted index populated with the documents
-        '''
-        
-        invertedIndex = InvertedIndex()
-
-        for document in documents:
-            terms = document.get_index_terms()
-            invertedIndex.add_documents(document._id, terms)
-        return invertedIndex
 
