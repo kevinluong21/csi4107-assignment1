@@ -116,10 +116,10 @@ class Document:
         self.title = title
         self.text = text
         
-        if not _id:
-            self._id += 1
+        if _id is None:
+            self._id = Document.increment_id()
         else:
-            self._id = self.increment_id()
+            self._id = _id #use the id passed to the doc
 
         self.metadata = metadata
         self.index_terms = extract_index_terms(self.title.strip() + " " + self.text.strip())

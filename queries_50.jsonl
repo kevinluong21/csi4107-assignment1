@@ -1,0 +1,50 @@
+{"_id": "0", "text": "0-dimensional biomaterials lack inductive properties.", "metadata": {}}
+{"_id": "2", "text": "1 in 5 million in UK have abnormal PrP positivity.", "metadata": {"13734012": [{"sentences": [4], "label": "CONTRADICT"}]}}
+{"_id": "4", "text": "1-1% of colorectal cancer patients are diagnosed with regional or distant metastases.", "metadata": {}}
+{"_id": "6", "text": "10% of sudden infant death syndrome (SIDS) deaths happen in newborns aged less than 6 months.", "metadata": {}}
+{"_id": "9", "text": "32% of liver transplantation programs required patients to discontinue methadone treatment in 2001.", "metadata": {"44265107": [{"sentences": [15], "label": "SUPPORT"}]}}
+{"_id": "10", "text": "4-PBA treatment decreases endoplasmic reticulum stress in response to general endoplasmic reticulum stress markers.", "metadata": {}}
+{"_id": "11", "text": "4-PBA treatment raises endoplasmic reticulum stress in response to general endoplasmic reticulum stress markers.", "metadata": {}}
+{"_id": "12", "text": "40mg/day dosage of folic acid and 2mg/day dosage of vitamin B12 does not affect chronic kidney disease (CKD) progression.", "metadata": {"33409100": [{"sentences": [8], "label": "SUPPORT"}, {"sentences": [12], "label": "SUPPORT"}]}}
+{"_id": "14", "text": "5'-nucleotidase metabolizes 6MP.", "metadata": {}}
+{"_id": "15", "text": "50% of patients exposed to radiation have activated markers of mesenchymal stem cells.", "metadata": {}}
+{"_id": "17", "text": "53% of perinatal mortality is due to low birth weight.", "metadata": {}}
+{"_id": "18", "text": "61% of colorectal cancer patients are diagnosed with regional or distant metastases.", "metadata": {}}
+{"_id": "19", "text": "7-day-old adult Caenorhabditis elegans exhibit approximately 5% of the learning capacity seen in 1-day old adults.", "metadata": {}}
+{"_id": "20", "text": "7-day-old adult Caenorhabditis elegans exhibit approximately 75% of the learning capacity seen in 1-day old adults.", "metadata": {}}
+{"_id": "21", "text": "70% of burn patients are admitted for hospitalization and further treatment after appearing at hospital emergency wards or outpatient clinics.", "metadata": {}}
+{"_id": "22", "text": "76-85% of people with severe mental disorder receive no treatment in low and middle income countries.", "metadata": {"6490571": [{"sentences": [7], "label": "SUPPORT"}]}}
+{"_id": "24", "text": "90% of patients with melanoma and an objective response to PD-1 blockade will experience a progression in their melanoma.", "metadata": {}}
+{"_id": "25", "text": "90% of sudden infant death syndrome (SIDS) deaths happen in newborns aged less than 6 months.", "metadata": {}}
+{"_id": "26", "text": "A 100g dose of chloroquine chemoprophylactic regimen results in retinal toxicity after 1 year of weekly intake.", "metadata": {}}
+{"_id": "27", "text": "A 100g dose of chloroquine chemoprophylactic regimen results in retinal toxicity after 5-6 years of weekly intake.", "metadata": {}}
+{"_id": "28", "text": "A T helper 2 cell (Th2) environment impedes disease development in patients with systemic lupus erythematosus (SLE).", "metadata": {"12670680": [{"sentences": [1], "label": "CONTRADICT"}, {"sentences": [2], "label": "CONTRADICT"}, {"sentences": [4], "label": "CONTRADICT"}]}}
+{"_id": "30", "text": "A breast cancer patient's capacity to metabolize tamoxifen influences treatment outcome.", "metadata": {"24341590": [{"sentences": [10], "label": "SUPPORT"}, {"sentences": [11], "label": "SUPPORT"}, {"sentences": [12], "label": "SUPPORT"}, {"sentences": [13], "label": "SUPPORT"}]}}
+{"_id": "32", "text": "A country's Vaccine Alliance (GAVI) eligibility is not indictivate of accelerated adoption of the Hub vaccine.", "metadata": {"12428497": [{"sentences": [8], "label": "CONTRADICT"}]}}
+{"_id": "34", "text": "A deficiency of folate increases blood levels of homocysteine.", "metadata": {"11705328": [{"sentences": [4], "label": "SUPPORT"}]}}
+{"_id": "35", "text": "A deficiency of vitamin B12 decreases blood levels of homocysteine.", "metadata": {}}
+{"_id": "37", "text": "A deficiency of vitamin B6 decreases blood levels of homocysteine.", "metadata": {}}
+{"_id": "39", "text": "A diminished ovarian reserve does not solely indicate infertility in an a priori non-infertile population.", "metadata": {"13497630": [{"sentences": [7], "label": "SUPPORT"}, {"sentences": [8], "label": "SUPPORT"}, {"sentences": [9], "label": "SUPPORT"}, {"sentences": [10], "label": "SUPPORT"}, {"sentences": [11], "label": "SUPPORT"}]}}
+{"_id": "40", "text": "A diminished ovarian reserve is a very strong indicator of infertility, even in an a priori non-infertile population.", "metadata": {"13497630": [{"sentences": [7], "label": "CONTRADICT"}, {"sentences": [8], "label": "CONTRADICT"}, {"sentences": [9], "label": "CONTRADICT"}, {"sentences": [10], "label": "CONTRADICT"}, {"sentences": [11], "label": "CONTRADICT"}]}}
+{"_id": "41", "text": "A high microerythrocyte count protects against severe anemia in homozygous alpha (+)- thalassemia trait subjects.", "metadata": {"18174210": [{"sentences": [1, 9], "label": "SUPPORT"}, {"sentences": [10], "label": "SUPPORT"}]}}
+{"_id": "43", "text": "A low percentage of hematopoietic progenitor cells are susceptible to HIV-1 infection ex vivo.", "metadata": {}}
+{"_id": "44", "text": "A mutation in HNF4A leads to an increased risk of developing diabetes by the age of 14 years.", "metadata": {"56893404": [{"sentences": [3], "label": "SUPPORT"}]}}
+{"_id": "45", "text": "A mutation in HNF4A leads to an increased risk of diabetes by the age of 14 years.", "metadata": {}}
+{"_id": "46", "text": "A single nucleotide variant the gene DGKK is strongly associated with increased risk of hypospadias.", "metadata": {"380526": [{"sentences": [2], "label": "SUPPORT"}]}}
+{"_id": "47", "text": "A strong bias in the phage genome locations where the spacers were derived has been observed in many CRISPR subtypes that confer the immunity to phage.", "metadata": {"26996935": [{"sentences": [6], "label": "SUPPORT"}]}}
+{"_id": "52", "text": "ALDH1 expression is associated with poorer prognosis for breast cancer primary tumors.", "metadata": {"45638119": [{"sentences": [4], "label": "SUPPORT"}]}}
+{"_id": "55", "text": "AMP-activated protein kinase (AMPK) activation reduces inflammation-related fibrosis in the lungs.", "metadata": {"49556906": [{"sentences": [5], "label": "SUPPORT"}, {"sentences": [6], "label": "SUPPORT"}, {"sentences": [7], "label": "SUPPORT"}]}}
+{"_id": "58", "text": "APOE4 expression in iPSC-derived neurons results in decreased tau phosphorylation.", "metadata": {"4709641": [{"sentences": [1], "label": "CONTRADICT"}]}}
+{"_id": "60", "text": "ART has no effect on the infectiveness of HIV-positive people.", "metadata": {"13899137": [{"sentences": [5], "label": "CONTRADICT"}, {"sentences": [9], "label": "CONTRADICT"}, {"sentences": [11], "label": "CONTRADICT"}]}}
+{"_id": "61", "text": "ART substantially reduces infectiveness of HIV-positive people.", "metadata": {"13899137": [{"sentences": [5], "label": "SUPPORT"}, {"sentences": [9], "label": "SUPPORT"}, {"sentences": [11], "label": "SUPPORT"}]}}
+{"_id": "62", "text": "ATF4 is a general endoplasmic reticulum stress marker.", "metadata": {}}
+{"_id": "63", "text": "ATM and Rad3 related protein are critical for sensing DNA damage.", "metadata": {}}
+{"_id": "64", "text": "ATM and Rad3 related protein have no role in sensing DNA damage.", "metadata": {}}
+{"_id": "66", "text": "AZT given with ribavirin increases anemia.", "metadata": {}}
+{"_id": "67", "text": "Activated Cdk5 phosphorylates the ATM protein in response to DNA damage.", "metadata": {"21295300": [{"sentences": [3], "label": "SUPPORT"}, {"sentences": [7], "label": "SUPPORT"}]}}
+{"_id": "68", "text": "Activated Cdk5 regulates DNA damage-induced neuronal death.", "metadata": {"21295300": [{"sentences": [6], "label": "SUPPORT"}]}}
+{"_id": "69", "text": "Activation of PPM1D enhances p53 function.", "metadata": {"5956380": [{"sentences": [5, 6], "label": "CONTRADICT"}], "4414547": [{"sentences": [5], "label": "CONTRADICT"}]}}
+{"_id": "71", "text": "Activation of the Rac1 homolog CED-10 kills viable cells in SRGP-1 mutant Caenorhabditis elegans.", "metadata": {"1127562": [{"sentences": [4, 5], "label": "SUPPORT"}]}}
+{"_id": "73", "text": "Activator-inhibitor pairs are provided ventrally by Xrl-sizzled.", "metadata": {}}
+{"_id": "74", "text": "Active H. pylori urease has a polymeric structure consisting of five distinct subunits.", "metadata": {}}
+{"_id": "76", "text": "Active Ly49Q induces neutrophil polarization.", "metadata": {"5531479": [{"sentences": [1], "label": "SUPPORT"}, {"sentences": [6], "label": "SUPPORT"}]}}
