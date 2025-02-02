@@ -1,6 +1,7 @@
 import pandas as pd
 import nltk
 import string
+import re
 from collections import Counter, defaultdict
 from spellchecker import SpellChecker
 from nltk.corpus import stopwords
@@ -12,7 +13,7 @@ nltk.download('wordnet')
 
 stop_words = set(stopwords.words('english'))
 
-# Used to split text into words without separating the punctuation (terms with hyphens remain intact because of words like "pre-diabetes" and "body-mass")
+# Used to split text into words without separating the punctuation (terms with hyphens remain intact because of words like "pre-diabetes" and "body-mass"). The punctuation is also maintained for each word in the case there is no space between sentences which results in cases like "I like to read.I like hats." where "read" and "I" should be 2 separate words.
 word_splitter = RegexpTokenizer(pattern=r"\w+[-]\w+|\w+['.,!?]*|\w+|\S+")
 
 # To check if a string is valid word (when splitting hyphenated words), use a spellchecker
@@ -71,10 +72,12 @@ def extract_index_terms(text:str) -> dict[str: int]:
         return {}
     
     text = text.lower().strip()
+    # If there are any unicode characters in the text, decode them into their proper representations
+    text = text.encode('unicode_escape').decode('unicode_escape')
     # Splits the given text into words
     words = word_splitter.tokenize(text)
-    # Strip punctuation and spaces at the end of each word
-    words = [word.strip(string.punctuation + " ≥≤™") for word in words]
+    # Remove all non-letters from the string entirely
+    words = [re.sub(pattern=r'[^\x61-\x7A-]', string=word, repl="") for word in words]
     # Remove any empty strings
     words = [word for word in words if word]
     # If a hyphenated word is a compound word, split the word. If not, remove the hyphen.
@@ -149,6 +152,4 @@ class Document:
         return self.index_terms
 
     def __repr__(self):
-        return f"Document(id={self._id}, title={self.title}, text={self.text}, index={self.index}, metadata={self.metadata})"
-
-
+        return f"Document(id={self._id}, title={self.title}, text={self.text}, index={self.index_terms}, metadata={self.metadata})"

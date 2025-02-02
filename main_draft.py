@@ -7,19 +7,26 @@ from preprocessing import Document
 from doc_utils import load_inverted_index_jsonl,load_jsonl, save_inverted_index_jsonl
 
 #Corpus loading 
-corpus = load_jsonl('corpus_first_5.jsonl')  # 5 documents
-queries = load_jsonl('queries_50.jsonl')  # 50 queries
+# corpus = load_jsonl('corpus_first_5.jsonl')  # 5 documents
+# queries = load_jsonl('queries_50.jsonl')  # 50 queries
+
+corpus = load_jsonl(r"scifact/corpus.jsonl")
+queries = load_jsonl(r"scifact/queries.jsonl")
 
 documents = []
+i = 1
 
 for doc in corpus:
+    print(f"Loading document {i} of {len(corpus)}...")
+    i += 1
 
     document = Document(title=doc['title'], text=doc['text'], _id=doc['_id'], metadata=doc['metadata'])
     
     documents.append(document)
     
 #add the path to the inverted index (TODO: make a parameterized script)
-index_file_path = "save_inv_check.jsonl"
+# index_file_path = "save_inv_check.jsonl"
+index_file_path = "inverted_index.jsonl"
 
 if os.path.exists(index_file_path):
     # Load the existing index
