@@ -145,7 +145,6 @@ def compute_cosine_similarity(query_vector, doc_vector):
 
 
 def rank_documents_for_query(query, inverted_index, document_vectors, total_documents, top_n=10):
-    
     """
     Rank documents for a given query based on their similarity scores.
 
@@ -162,57 +161,68 @@ def rank_documents_for_query(query, inverted_index, document_vectors, total_docu
     
     # Generate query vector from the query text
     query_vector = get_query_vector(query, inverted_index, total_documents)
-    # print(f"qv {query_vector}")
-    # Calculate similarity between the query and each document
+
+    # Initialize a dictionary to store similarity scores
     similarities = {}
+
+    # Go through each document and calculate cosine similarity
     for doc_id, doc_vector in document_vectors.items():
-        similarity = compute_cosine_similarity(query_vector, doc_vector)
-        similarities[doc_id] = similarity
-    
-    # Sort documents based on the similarity score
+        # Check if the document contains at least one of the query words using the inverted index
+        contains_query_word = False
+        for word in query.split():  # You can change this depending on your query processing logic
+            if word in inverted_index.index:  # Access the index of the inverted index
+                contains_query_word = True
+                break
+
+        # If the document contains query words, compute similarity
+        if contains_query_word:
+            similarity = compute_cosine_similarity(query_vector, doc_vector)
+            if similarity > 0:  # Only consider documents with a non-zero similarity
+                similarities[doc_id] = similarity
+
+    # Sort the documents by similarity score in descending order
     sorted_documents = sorted(similarities.items(), key=lambda item: item[1], reverse=True)
-    
+    if not sorted_documents:
+        print(f"No documents returned for query: {query}")
     # Return the top N ranked documents
     top_documents = sorted_documents[:top_n]
 
     return top_documents
+  
 
-
-def process_and_save_results(queries, inv_index, document_vectors, documents, output_file_name="results.txt", top_n=10):
+def process_and_save_results(queries, inv_index, document_vectors, documents, output_file_name="Results", top_n=100, run_tag="run1"):
     """
-    Process queries, rank documents, and save the top results to a file in the format:
-    query_id document_id score
+    Process queries, rank documents, and save the top results in the required format.
+
+    Output Format:
+    query_id Q0 doc_id rank score run_tag
 
     Parameters:
     - queries: List of query dictionaries containing '_id' and 'text'.
     - inv_index: Inverted index used for retrieving relevant documents.
     - document_vectors: Precomputed document vectors for similarity calculation.
     - documents: List of all documents in the corpus.
-    - output_file_name: Name of the file to save results (default is 'results.txt').
-    - top_n: Maximum number of top documents to retrieve for each query (default is 10).
+    - output_file_name: Name of the file to save results (default is 'Results').
+    - top_n: Maximum number of top documents to retrieve for each query (default is 100).
+    - run_tag: A unique identifier for this run.
     """
-    top_documents_for_all_queries = []  # To store all query results for potential further processing
-    
     with open(output_file_name, "w") as output_file:
-        for q in range(len(queries)):
-            query_id = queries[q]['_id']
-            query_text = queries[q]['text']
+        for query in queries:
+            query_id = query['_id']  # Query ID
+            query_text = query['text']  # Query text
             
-            print(f"Processing query {query_id}: {query_text}")
+            # print(f"Processing query {query_id}: {query_text}")
             
             # Rank documents for the query
             top_documents = rank_documents_for_query(query_text, inv_index, document_vectors, len(documents), top_n=top_n)
             
-            # Save the top results for the current query
-            for rank, (doc_id, similarity) in enumerate(top_documents, start=1):
-                top_documents_for_all_queries.append((query_id, doc_id, similarity))
-                # Write the result to the output file
-                output_file.write(f"{query_id} {doc_id} {similarity:.6f}\n")
-            
-            # Optionally print the top results for debugging or review
-            print(f"Top Documents for Query {query_id}:")
-            for rank, (doc_id, similarity) in enumerate(top_documents[:5], start=1):  # Display top 5 for debugging
-                print(f"Rank {rank}: Document ID {doc_id}, Score {similarity:.6f}")
+            # Write results in the required format
+            for rank, (doc_id, score) in enumerate(top_documents, start=1):
+                output_file.write(f"{query_id} Q0 {doc_id} {rank} {score:.6f} {run_tag}\n")
+
+            print(f"Top results for Query {query_id}:")
+            for rank, (doc_id, score) in enumerate(top_documents[:5], start=1):  # Display top 5 for debugging
+                print(f"Rank {rank}: Document ID {doc_id}, Score {score:.6f}")
             print("")
 
     print(f"Results have been saved to {output_file_name}.")

@@ -8,10 +8,13 @@ from doc_utils import load_inverted_index_jsonl,load_jsonl, save_inverted_index_
 
 #Corpus loading 
 # corpus = load_jsonl('corpus_first_5.jsonl')  # 5 documents
-# queries = load_jsonl('queries_50.jsonl')  # 50 queries
+# queries = load_jsonl('queries_for_test.jsonl')  # 50 queries
 
-corpus = load_jsonl(r"scifact/corpus.jsonl")
-queries = load_jsonl(r"scifact/queries.jsonl")
+# corpus = load_jsonl(r"scifact/corpus.jsonl")
+# queries = load_jsonl(r"scifact/queries.jsonl")
+
+corpus = load_jsonl('corpus.jsonl')  # all
+queries = load_jsonl('queries_for_test.jsonl')  # test queries
 
 documents = []
 i = 1
@@ -60,44 +63,16 @@ for document in documents:
 
 top_documents_for_all_queries = []
 
-# Process each query
-for q in range(len(queries)):
-    query_id = queries[q]['_id']
-    query_text = queries[q]['text']
-    
-    print(f"Processing query {query_id}: {query_text}") 
-    
-    top_documents = rank_documents_for_query(query_text, inv_index, document_vectors, len(documents), top_n=5)
-    
-    # Get the top document (document with highest similarity score)
-    top_doc = top_documents[0]  
-    
-    # Save the top document for this query
-    top_documents_for_all_queries.append((query_id, top_doc[0], top_doc[1]))  # (query_id, doc_id, similarity)
-    
-    # Optionally, display the top documents and their similarity scores
-    print(f"Top Documents for Query {query_id}:")
-    for doc_id, similarity in top_documents:
-        print(f"Document ID: {doc_id}, Similarity: {similarity}")
-    
-    # Display the top match for the current query
-    print(f"Best Match for Query {query_id}: Document ID {top_doc[0]} with Similarity {top_doc[1]}")
-    print("")
 
-# After all queries, find the overall best match
-best_match_overall = max(top_documents_for_all_queries, key=lambda x: x[2])  # Max by similarity score (third value in tuple)
-
-# Display the overall best match
-query_id, doc_id, similarity = best_match_overall
-print(f"Overall Best Match: Query ID {query_id}, Document ID {doc_id}, Similarity {similarity}")
+process_and_save_results(
+    queries=queries, 
+    inv_index=inv_index, 
+    document_vectors=document_vectors, 
+    documents=documents, 
+    output_file_name="result_for_title_and_text.txt", 
+    top_n=100 
+)
 
 
-
-# process_and_save_results(
-#     queries=queries, 
-#     inv_index=inv_index, 
-#     document_vectors=document_vectors, 
-#     documents=documents, 
-#     output_file_name="results.txt", 
-#     top_n=2 
-# )
+#TODO:
+# query text vs title (need to redo inverted index with only the title for the docs?)
