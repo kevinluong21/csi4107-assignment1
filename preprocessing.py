@@ -4,9 +4,11 @@ import string
 import re
 from collections import Counter, defaultdict
 from spellchecker import SpellChecker
-from nltk.corpus import stopwords
+from nltk.corpus import stopwords, wordnet
 from nltk.tokenize import RegexpTokenizer
 from nltk.stem import WordNetLemmatizer
+
+# TODO: add every synonym of each index term with the same frequency using wordnet!
 
 nltk.download('stopwords')
 nltk.download('wordnet')
@@ -57,6 +59,27 @@ def is_number(s:str) -> bool:
         return True
     except:
         return False
+    
+# def generate_synonyms(word:str) -> list[str]:
+#     synsets = wordnet.synsets(word)
+
+#     if not synsets:
+#         return set()
+    
+#     print(synsets[0])
+
+#     synonyms = set()
+
+#     synset = synsets[0]
+#     for lemma in synset.lemmas():
+#         synonym = lemma.name().lower().replace("_", " ")
+#         print(synonym)
+#         if synonym != word:
+#             synonyms.add(synonym)
+
+#     return synonyms
+
+# print(generate_synonyms("Activation"))
 
 def extract_index_terms(text:str) -> dict[str: int]:
     '''
@@ -76,13 +99,13 @@ def extract_index_terms(text:str) -> dict[str: int]:
     text = text.encode('unicode_escape').decode('unicode_escape')
     # Splits the given text into words
     words = word_splitter.tokenize(text)
-    # Remove all non-letters from the string entirely
+    # Remove all non-letters from the string entirely (maintain hyphens)
     words = [re.sub(pattern=r'[^\x61-\x7A-]', string=word, repl="") for word in words]
-    # Remove any empty strings
-    words = [word for word in words if word]
     # If a hyphenated word is a compound word, split the word. If not, remove the hyphen.
     words = [word.split("-") if is_hyphenated_compound_word(word) else [word.replace("-", "")] for word in words]
     words = [word for list_of_words in words for word in list_of_words] # Flatten the list of lists into a single list
+    # Remove any empty strings
+    words = [word for word in words if word]
     # Remove any numbers
     words = [word for word in words if not is_number(word)]
     # Count the occurences of each word within the document
@@ -140,6 +163,17 @@ class Document:
         cls._id += 1
         return cls._id
     
+    def get_id(self):
+        '''
+        Returns the ID of the Document.
+
+        Parameters:
+            None
+        Returns:
+            _id (int): The ID of the Document.
+        '''
+        return self._id
+    
     def get_index_terms(self):
         '''
         Returns the index terms and term frequency of the document.
@@ -153,3 +187,8 @@ class Document:
 
     def __repr__(self):
         return f"Document(id={self._id}, title={self.title}, text={self.text}, index={self.index_terms}, metadata={self.metadata})"
+
+
+# document = Document(_id= "4983", title= "Microstructural development of human newborn cerebral white matter assessed in vivo by diffusion tensor magnetic resonance imaging.", text= "Alterations of the architecture of cerebral white matter in the developing human brain can affect cortical development and result in functional disabilities. A line scan diffusion-weighted magnetic resonance imaging (MRI) sequence with diffusion tensor analysis was applied to measure the apparent diffusion coefficient, to calculate relative anisotropy, and to delineate three-dimensional fiber architecture in cerebral white matter in preterm (n = 17) and full-term infants (n = 7). To assess effects of prematurity on cerebral white matter development, early gestation preterm infants (n = 10) were studied a second time at term. In the central white matter the mean apparent diffusion coefficient at 28 wk was high, 1.8 microm2/ms, and decreased toward term to 1.2 microm2/ms. In the posterior limb of the internal capsule, the mean apparent diffusion coefficients at both times were similar (1.2 versus 1.1 microm2/ms). Relative anisotropy was higher the closer birth was to term with greater absolute values in the internal capsule than in the central white matter. Preterm infants at term showed higher mean diffusion coefficients in the central white matter (1.4 +/- 0.24 versus 1.15 +/- 0.09 microm2/ms, p = 0.016) and lower relative anisotropy in both areas compared with full-term infants (white matter, 10.9 +/- 0.6 versus 22.9 +/- 3.0%, p = 0.001; internal capsule, 24.0 +/- 4.44 versus 33.1 +/- 0.6% p = 0.006). Nonmyelinated fibers in the corpus callosum were visible by diffusion tensor MRI as early as 28 wk; full-term and preterm infants at term showed marked differences in white matter fiber organization. The data indicate that quantitative assessment of water diffusion by diffusion tensor MRI provides insight into microstructural development in cerebral white matter in living infants.", metadata= {})
+
+# print(document)
