@@ -43,43 +43,55 @@ def is_hyphenated_compound_word(word:str) -> bool:
             return True
     return False
 
-def is_number(s:str) -> bool:
-    '''
-    Returns True if a string is a number or is a string of numbers with decimal points (e.g. 123.456.789). Otherwise, returns False.
+# def is_number(s:str) -> bool:
+#     '''
+#     Returns True if a string is a number or is a string of numbers with decimal points (e.g. 123.456.789). Otherwise, returns False.
 
-    Parameters:
-        s (str): String to test
-    Returns:
-        True or False
-    '''
-    # Remove all the decimal points and check if the string contains only numbers
-    try:
-        s = s.replace(".", "")
-        int(s)
-        return True
-    except:
-        return False
+#     Parameters:
+#         s (str): String to test
+#     Returns:
+#         True or False
+#     '''
+#     # Remove all the decimal points and check if the string contains only numbers
+#     try:
+#         s = s.replace(".", "")
+#         int(s)
+#         return True
+#     except:
+#         return False
     
 # def generate_synonyms(word:str) -> list[str]:
 #     synsets = wordnet.synsets(word)
 
 #     if not synsets:
-#         return set()
-    
-#     print(synsets[0])
+#         return []
 
-#     synonyms = set()
+#     synonyms = {word}
 
-#     synset = synsets[0]
-#     for lemma in synset.lemmas():
-#         synonym = lemma.name().lower().replace("_", " ")
-#         print(synonym)
-#         if synonym != word:
-#             synonyms.add(synonym)
+#     for synset in synsets:
+#         for lemma in synset.lemmas():
+#             synonym = lemma.name().lower().replace("_", " ")
+#             if is_hyphenated_compound_word(synonym):
+#                 synonym = set(re.split(pattern=r"[\s-]", string=synonym))
+#             else:
+#                 synonym = set(synonym.split(" "))
+
+#             synonyms = synonyms.union(synonym)
+
+#     synonyms.discard(word)
+
+#     synonyms = synonyms.difference(stop_words)
+#     synonyms = list(synonyms)
+#     # Remove any non-letters (except for hyphens)
+#     synonyms = [re.sub(pattern=r'[^\x61-\x7A-]', string=word, repl="") for word in synonyms]
+#     # Remove any empty strings
+#     synonyms = [word for word in synonyms if word]
+#     # Lemmatize each synonym
+#     synonyms = [lemmatizer.lemmatize(word) for word in synonyms]
+#     # # Remove any numbers
+#     # synonyms = [word for word in synonyms if not is_number(word)]
 
 #     return synonyms
-
-# print(generate_synonyms("Activation"))
 
 def extract_index_terms(text:str) -> dict[str: int]:
     '''
@@ -106,8 +118,9 @@ def extract_index_terms(text:str) -> dict[str: int]:
     words = [word for list_of_words in words for word in list_of_words] # Flatten the list of lists into a single list
     # Remove any empty strings
     words = [word for word in words if word]
-    # Remove any numbers
-    words = [word for word in words if not is_number(word)]
+    # # Remove any numbers
+    # words = [word for word in words if not is_number(word)]
+
     # Count the occurences of each word within the document
     term_freq = Counter(words)
     index_terms = dict()
@@ -132,6 +145,22 @@ def extract_index_terms(text:str) -> dict[str: int]:
                 index_terms[root_word] += term_freq[key]
             else:
                 index_terms[root_word] = term_freq[key]
+
+    # synonyms = {}
+    # for word in index_terms.keys():
+    #     generated_synonyms = generate_synonyms(word)
+    #     if generated_synonyms:
+    #         synonyms[word] = generated_synonyms
+
+    # for term, list_of_synonyms in synonyms.items():
+    #     # To avoid artificially inflating the importance of a synonym, we distribute the original count across synonyms
+    #     distributed_count = index_terms[term] / len(list_of_synonyms)
+
+    #     for synonym in list_of_synonyms:
+    #         if synonym not in index_terms:
+    #             index_terms[synonym] = distributed_count
+
+    #     index_terms[term] = distributed_count
 
     return index_terms
 

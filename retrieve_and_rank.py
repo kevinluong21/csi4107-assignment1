@@ -186,8 +186,50 @@ def rank_documents_for_query(query, inverted_index, document_vectors, total_docu
     top_documents = sorted_documents[:top_n]
 
     return top_documents
-  
 
+def pseudo_relevance_loop(query, documents:dict[int, Document], top_documents:list, n=2, k=2):
+    """
+    Take the top n terms of the top k documents returned by the first pass of the IR and add them to the end of the query.
+
+    Parameters:
+        query (str): The query as a string.
+        documents (dict): A dictionary where the document ID is the key and the Document object is the value.
+        top_documents (list): A list of top documents where each index is a tuple of the document ID and the similarity score.
+        n: The top number of words to extract from each of the top k documents. By default, 2.
+        k: The top k documents to extract terms from. By default, 2.
+
+    Returns:
+        query (str): The query with more terms appended to it.
+    """
+    # Split query into words and make it into a set to avoid duplicating terms to add and terms already in the query
+    query = query.split(" ")
+    query = set(query)
+
+    terms_to_add = set()
+
+    for document in top_documents[:k]:
+        _id = document[0]
+        index_terms = documents[_id].get_index_terms()
+        # Sort the index terms by count
+        index_terms = sorted(index_terms.items(), key=lambda item: item[1], reverse=True)
+        
+        # To avoid adding duplicate terms into the query but still adding n terms to the query, continue looping through the index
+        # terms until you find a term that is not already in the query
+        i = 0
+        j = 0
+        while i < n and j < len(index_terms):
+            term = index_terms[j][0]
+            if term not in query:
+                terms_to_add.add(term)
+                i += 1
+                j += 1
+            else:
+                j += 1
+
+    query = " ".join(query) + " " + " ".join(terms_to_add)
+    query = query.strip()
+    return query
+  
 def process_and_save_results(queries, inv_index, document_vectors, documents, output_file_name="Results", top_n=100, run_tag="run1"):
     """
     Process queries, rank documents, and save the top results in the required format.
@@ -212,6 +254,12 @@ def process_and_save_results(queries, inv_index, document_vectors, documents, ou
             # print(f"Processing query {query_id}: {query_text}")
             
             # Rank documents for the query
+            top_documents = rank_documents_for_query(query_text, inv_index, document_vectors, len(documents), top_n=top_n)
+
+            # Perform a pseudo-relevance feedback loop
+            print(query_text)
+            query_text = pseudo_relevance_loop(query_text, documents, top_documents)
+            print(query_text)
             top_documents = rank_documents_for_query(query_text, inv_index, document_vectors, len(documents), top_n=top_n)
             
             # Write results in the required format
