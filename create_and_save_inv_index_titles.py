@@ -8,13 +8,13 @@ from doc_utils import load_inverted_index_jsonl,load_jsonl, save_inverted_index_
 
 #Corpus loading 
 # corpus = load_jsonl('corpus_first_5.jsonl')  # 5 documents
-# queries = load_jsonl('queries_for_test.jsonl')  # 50 queries
+queries = load_jsonl('queries_for_test.jsonl')  # 50 queries
 
 # corpus = load_jsonl(r"scifact/corpus.jsonl")
 # queries = load_jsonl(r"scifact/queries.jsonl")
 
 corpus = load_jsonl('corpus.jsonl')  # all
-queries = load_jsonl('queries_for_test.jsonl')  # test queries
+# queries = load_jsonl('queries_for_test.jsonl')  # test queries
 
 documents = []
 i = 1
@@ -23,18 +23,16 @@ for doc in corpus:
     print(f"Loading document {i} of {len(corpus)}...")
     i += 1
 
-    document = Document(title=doc['title'], text=doc['text'], _id=doc['_id'], metadata=doc['metadata'])
+    document = Document(title=doc['title'], text="", _id=doc['_id'], metadata=doc['metadata'])
     
     documents.append(document)
     
-#add the path to the inverted index (TODO: make a parameterized script)
 # index_file_path = "save_inv_check.jsonl"
-index_file_path = "inverted_index.jsonl"
-index_file_path_titles = "inverted_index_titles.jsonl"
+index_file_path = "inverted_index_titles.jsonl"
 
-if os.path.exists(index_file_path_titles):
+if os.path.exists(index_file_path):
     # Load the existing index
-    inv_index = load_inverted_index_jsonl(index_file_path_titles)
+    inv_index = load_inverted_index_jsonl(index_file_path)
     print("Loaded existing inverted index.")
 else:
     # Create and save a new inverted index
@@ -50,26 +48,3 @@ else:
     save_inverted_index_jsonl(inv_index, index_file_path)
     print("Saved new inverted index.")
     
-
-document_vectors = {}
-
-for document in documents:
-
-    document_id = document._id
-
-    doc_vector = get_document_vector(document_id, inv_index, len(documents))
-
-    document_vectors[document_id] = doc_vector
-    
-
-top_documents_for_all_queries = []
-
-
-process_and_save_results(
-    queries=queries, 
-    inv_index=inv_index, 
-    document_vectors=document_vectors, 
-    documents=documents, 
-    output_file_name="result2_for_titles.txt", 
-    top_n=100 
-)

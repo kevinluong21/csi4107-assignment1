@@ -165,11 +165,10 @@ def rank_documents_for_query(query, inverted_index, document_vectors, total_docu
     # Initialize a dictionary to store similarity scores
     similarities = {}
 
-    # Go through each document and calculate cosine similarity
     for doc_id, doc_vector in document_vectors.items():
         # Check if the document contains at least one of the query words using the inverted index
         contains_query_word = False
-        for word in query.split():  # You can change this depending on your query processing logic
+        for word in query.split():  
             if word in inverted_index.index:  # Access the index of the inverted index
                 contains_query_word = True
                 break
@@ -184,7 +183,6 @@ def rank_documents_for_query(query, inverted_index, document_vectors, total_docu
     sorted_documents = sorted(similarities.items(), key=lambda item: item[1], reverse=True)
     if not sorted_documents:
         print(f"No documents returned for query: {query}")
-    # Return the top N ranked documents
     top_documents = sorted_documents[:top_n]
 
     return top_documents
