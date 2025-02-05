@@ -1,29 +1,6 @@
 from math import log, sqrt
 from indexing import InvertedIndex
-from preprocessing import Document, extract_index_terms #document import is needed for running some test cases
-import nltk
-from nltk.corpus import wordnet
-
-nltk.download('wordnet')
-
-def generate_synonyms(word:str) -> list[str]:
-    """
-    Generate a list of every single synonym for a word using Wordnet.
-    """
-    synsets = wordnet.synsets(word)
-
-    if not synsets:
-        return []
-
-    synonyms = {word}
-
-    for synset in synsets:
-        for lemma in synset.lemmas():
-            synonym = lemma.name().lower().replace("_", " ")
-            synonyms = synonyms.union(synonym)
-
-    synonyms.discard(word)
-    return list(synonyms)
+from preprocessing import Document, Query, extract_index_terms #document import is needed for running some test cases
 
 def compute_tf_idf(term_freq, doc_freq, total_docs, max_frq):
     """
@@ -142,15 +119,36 @@ def get_query_vector(query, inverted_index, total_documents):
     
     return query_vector
 
-def get_bm25_query_vector(query, document: Document, inverted_index, total_documents, avg_doc_length, k1=1.2, b=0.75):
+def get_bm25_query_vector(query: Query, document: Document, inverted_index, total_documents, avg_doc_length, k1=1.2, b=0.75):
     """
     Tokenize a query vector using BM25 weighting. Each vector is dependent on the document.
     """
     # Tokenize the query and count term frequencies
-    query_terms = extract_index_terms(query)
+    query_terms = query.get_index_terms()
+    synonyms = query.get_index_synonyms()
+
+    # revised_query_terms = set()
 
     index_terms = document.get_index_terms()
-    doc_length = len(index_terms)
+
+    # for term in query_terms.keys():
+    #     term_freq = index_terms.get(term, 0)
+    #     revised_query_terms.add(term)
+
+    #     if term_freq == 0:
+    #         for synonym in synonyms[term]:
+    #             synonym_term_freq = index_terms.get(synonym, 0)
+    #             synonym_doc_freq = len(inverted_index.get_postings(synonym))
+
+    #             if synonym_term_freq > 0 and synonym_doc_freq < 5 and synonym not in revised_query_terms:
+    #                 print(synonym)
+    #                 revised_query_terms.remove(term)
+    #                 revised_query_terms.add(synonym)
+    #                 break
+
+    doc_length = len(document)
+
+    # TODO: find query terms that are NOT in the document, then find whether or not the word has a potential synonym in the index terms through a set intersection. if there is a match, replace the term with the synonym. if not, the term's weight remains 0.
 
     query_vector = {}
     for term in query_terms.keys():
@@ -256,7 +254,7 @@ def rank_documents_for_query(query, inverted_index, document_vectors, total_docu
 
     return top_documents
 
-def bm25_rank_documents_for_query(query, inverted_index, documents: dict, avg_doc_length, k1=1.2, b=0.75, top_n=10):
+def bm25_rank_documents_for_query(query: Query, inverted_index, document_vectors, documents: dict, avg_doc_length, k1=1.2, b=0.75, top_n=10):
     """
     Using BM25 scores, rank the documents for each query.
 
@@ -278,7 +276,7 @@ def bm25_rank_documents_for_query(query, inverted_index, documents: dict, avg_do
     for doc_id, document in documents.items():
         # Check if the inverted index contains at least one of the query words
         contains_query_word = False
-        for word in query.split():  
+        for word in query.get_index_terms():  
             if word in inverted_index.index:  # Access the index of the inverted index
                 contains_query_word = True
                 break
@@ -286,7 +284,7 @@ def bm25_rank_documents_for_query(query, inverted_index, documents: dict, avg_do
         # If the document contains query words, compute similarity
         if contains_query_word:
             query_vector = get_bm25_query_vector(query, document, inverted_index, len(documents), avg_doc_length, k1=k1, b=b)
-            similarity = compute_cosine_similarity(query_vector, doc_vector)
+            similarity = compute_cosine_similarity(query_vector, document_vectors[doc_id])
             if similarity > 0:  # Only consider documents with a non-zero similarity
                 similarities[doc_id] = similarity
 
@@ -298,7 +296,8 @@ def bm25_rank_documents_for_query(query, inverted_index, documents: dict, avg_do
 
     return top_documents
 
-def pseudo_relevance_loop(query, documents:dict[int, Document], top_documents:list, n=2, k=3):
+
+def pseudo_relevance_loop(query: Query, documents:dict[int, Document], top_documents:list, n=2, k=3):
     """
     Take the top n terms of the top k documents returned by the first pass of the IR and add them to the end of the query.
 
@@ -313,8 +312,8 @@ def pseudo_relevance_loop(query, documents:dict[int, Document], top_documents:li
         query (str): The query with more terms appended to it.
     """
     # Split query into words and make it into a set to avoid duplicating terms to add and terms already in the query
-    query = query.lower().split(" ")
-    query = set(query)
+    query = query.get_index_terms()
+    query = set(query.keys())
 
     for document in top_documents[:k]:
         _id = document[0]
@@ -353,17 +352,21 @@ def process_and_save_results(queries, inv_index, document_vectors, documents, av
             query_text = query['text']  # Query text
             
             # print(f"Processing query {query_id}: {query_text}")
+
+            query = Query(_id=query_id, query=query_text)
             
             # # Rank documents for the query
-            # # top_documents = rank_documents_for_query(query_text, inv_index, document_vectors, len(documents), top_n=top_n)
-            # top_documents = bm25_rank_documents_for_query(query_text, inv_index, documents, avg_doc_length, k1=k1, b=b, top_n=top_n)
+            # # # top_documents = rank_documents_for_query(query_text, inv_index, document_vectors, len(documents), top_n=top_n)
+            # top_documents = bm25_rank_documents_for_query(query, inv_index, document_vectors, documents, avg_doc_length, k1=k1, b=b, top_n=top_n)
 
             # # Perform a pseudo-relevance feedback loop
+            # print(query.get_query())
+            # query_text = pseudo_relevance_loop(query, documents, top_documents)
             # print(query_text)
-            # query_text = pseudo_relevance_loop(query_text, documents, top_documents)
-            # print(query_text)
-            # top_documents = rank_documents_for_query(query_text, inv_index, document_vectors, len(documents), top_n=top_n)
-            top_documents = bm25_rank_documents_for_query(query_text, inv_index, documents, avg_doc_length, k1=k1, b=b, top_n=top_n)
+            # query = Query(_id=query_id, query=query_text)
+
+            # Perform a ranking again of the documents
+            top_documents = bm25_rank_documents_for_query(query, inv_index, document_vectors, documents, avg_doc_length, k1=k1, b=b, top_n=top_n)
 
             # Write results in the required format
             for rank, (doc_id, score) in enumerate(top_documents, start=1):

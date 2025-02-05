@@ -81,7 +81,7 @@ process_and_save_results(
     documents=documents, 
     avg_doc_length=avg_doc_length,
     output_file_name="bm25_result_for_titles_and_text.txt", 
-    k1=1.25,
-    b=0.85,
+    k1=1.0,
+    b=0.5,
     top_n=100 
 )
