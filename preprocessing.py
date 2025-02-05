@@ -11,7 +11,7 @@ from nltk.stem import WordNetLemmatizer
 # TODO: add every synonym of each index term with the same frequency using wordnet!
 
 nltk.download('stopwords')
-nltk.download('wordnet')
+# nltk.download('wordnet')
 
 stop_words = set(stopwords.words('english'))
 

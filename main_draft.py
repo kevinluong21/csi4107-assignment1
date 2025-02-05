@@ -2,7 +2,7 @@ from collections import defaultdict
 import os
 
 from indexing import InvertedIndex
-from retrieve_and_rank import get_document_vector, process_and_save_results, rank_documents_for_query
+from retrieve_and_rank import get_document_vector, get_bm25_document_vector, process_and_save_results, rank_documents_for_query
 from preprocessing import Document
 from doc_utils import load_inverted_index_jsonl,load_jsonl, save_inverted_index_jsonl
 
@@ -53,11 +53,20 @@ else:
 
 document_vectors = {}
 
+# Calculate the average document length
+avg_doc_length = 0
+
+for _id, document in documents.items():
+    avg_doc_length += len(document.get_index_terms())
+
+avg_doc_length = avg_doc_length / len(documents)
+
 for _id, document in documents.items():
 
     document_id = _id
 
-    doc_vector = get_document_vector(document_id, inv_index, len(documents))
+    # doc_vector = get_document_vector(document_id, inv_index, len(documents))
+    doc_vector = get_bm25_document_vector(document, inv_index, len(documents), avg_doc_length)
 
     document_vectors[document_id] = doc_vector
     
@@ -70,6 +79,9 @@ process_and_save_results(
     inv_index=inv_index, 
     document_vectors=document_vectors, 
     documents=documents, 
-    output_file_name="result_for_titles_and_text.txt", 
+    avg_doc_length=avg_doc_length,
+    output_file_name="bm25_result_for_titles_and_text.txt", 
+    k1=1.25,
+    b=0.85,
     top_n=100 
 )

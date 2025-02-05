@@ -1,7 +1,29 @@
 from math import log, sqrt
 from indexing import InvertedIndex
 from preprocessing import Document, extract_index_terms #document import is needed for running some test cases
+import nltk
+from nltk.corpus import wordnet
 
+nltk.download('wordnet')
+
+def generate_synonyms(word:str) -> list[str]:
+    """
+    Generate a list of every single synonym for a word using Wordnet.
+    """
+    synsets = wordnet.synsets(word)
+
+    if not synsets:
+        return []
+
+    synonyms = {word}
+
+    for synset in synsets:
+        for lemma in synset.lemmas():
+            synonym = lemma.name().lower().replace("_", " ")
+            synonyms = synonyms.union(synonym)
+
+    synonyms.discard(word)
+    return list(synonyms)
 
 def compute_tf_idf(term_freq, doc_freq, total_docs, max_frq):
     """
@@ -27,7 +49,12 @@ def compute_tf_idf(term_freq, doc_freq, total_docs, max_frq):
 # test case from the lecture
 # print(compute_tf_idf(3, 50, 10000, 3))
 
-
+def compute_bm25(total_documents, term_freq, doc_freq, doc_length, avg_doc_length, k1=1.2, b=0.75):
+    """
+    Computes the BM25 weighting for a given term.
+    """
+    weight = (term_freq * (log((total_documents - doc_freq + 0.5) / (doc_freq + 0.5)))) / ((k1 * ((1 - b) + (b * doc_length / avg_doc_length))) + term_freq)
+    return weight
 
 def get_document_vector(document_id, inverted_index: InvertedIndex, total_documents):
     """
@@ -65,6 +92,24 @@ def get_document_vector(document_id, inverted_index: InvertedIndex, total_docume
     
     return doc_vector
 
+def get_bm25_document_vector(document: Document, inverted_index: InvertedIndex, total_documents, avg_doc_length, k1=1.2, b=0.75):
+    """
+    Tokenize each document using BM25 weighting.
+    """
+    # Create an empty dictionary to store the TF-IDF scores
+    doc_vector = {}
+
+    index_terms = document.get_index_terms()
+    doc_length = len(index_terms)
+
+    for term, term_freq in index_terms.items():
+        doc_freq = len(inverted_index.get_postings(term))
+
+        weight = compute_bm25(total_documents, term_freq, doc_freq, doc_length, avg_doc_length, k1=k1, b=b)
+
+        doc_vector[term] = weight
+    
+    return doc_vector
 
 #TEST CASE
 
@@ -96,6 +141,32 @@ def get_query_vector(query, inverted_index, total_documents):
         query_vector[term] = tf_idf
     
     return query_vector
+
+def get_bm25_query_vector(query, document: Document, inverted_index, total_documents, avg_doc_length, k1=1.2, b=0.75):
+    """
+    Tokenize a query vector using BM25 weighting. Each vector is dependent on the document.
+    """
+    # Tokenize the query and count term frequencies
+    query_terms = extract_index_terms(query)
+
+    index_terms = document.get_index_terms()
+    doc_length = len(index_terms)
+
+    query_vector = {}
+    for term in query_terms.keys():
+        # Get document frequency from the inverted index
+        doc_freq = len(inverted_index.get_postings(term))
+        # Get the query term frequency in the given document
+        term_freq = index_terms.get(term, 0)
+
+        if term_freq > 0:
+            weight = compute_bm25(total_documents, term_freq, doc_freq, doc_length, avg_doc_length, k1=k1, b=b)
+            query_vector[term] = weight
+        else:
+            query_vector[term] = 0
+
+    return query_vector
+
     
 #Test
 # query = "machine learning"
@@ -142,8 +213,6 @@ def compute_cosine_similarity(query_vector, doc_vector):
 # similarity = compute_cosine_similarity(query_vector, doc_vector)
 # print("Cosine Similarity:", similarity)
 
-
-
 def rank_documents_for_query(query, inverted_index, document_vectors, total_documents, top_n=10):
     """
     Rank documents for a given query based on their similarity scores.
@@ -187,7 +256,49 @@ def rank_documents_for_query(query, inverted_index, document_vectors, total_docu
 
     return top_documents
 
-def pseudo_relevance_loop(query, documents:dict[int, Document], top_documents:list, n=2, k=2):
+def bm25_rank_documents_for_query(query, inverted_index, documents: dict, avg_doc_length, k1=1.2, b=0.75, top_n=10):
+    """
+    Using BM25 scores, rank the documents for each query.
+
+    Parameters:
+        - query (str)
+        - inverted_index
+        - documents
+        - avg_doc_length
+        - k1
+        - b
+        - top_n
+
+    Returns:
+        - top_documents
+    """
+    # Initialize a dictionary to store similarity scores
+    similarities = {}
+
+    for doc_id, document in documents.items():
+        # Check if the inverted index contains at least one of the query words
+        contains_query_word = False
+        for word in query.split():  
+            if word in inverted_index.index:  # Access the index of the inverted index
+                contains_query_word = True
+                break
+
+        # If the document contains query words, compute similarity
+        if contains_query_word:
+            query_vector = get_bm25_query_vector(query, document, inverted_index, len(documents), avg_doc_length, k1=k1, b=b)
+            similarity = compute_cosine_similarity(query_vector, doc_vector)
+            if similarity > 0:  # Only consider documents with a non-zero similarity
+                similarities[doc_id] = similarity
+
+    # Sort the documents by similarity score in descending order
+    sorted_documents = sorted(similarities.items(), key=lambda item: item[1], reverse=True)
+    if not sorted_documents:
+        print(f"No documents returned for query: {query}")
+    top_documents = sorted_documents[:top_n]
+
+    return top_documents
+
+def pseudo_relevance_loop(query, documents:dict[int, Document], top_documents:list, n=2, k=3):
     """
     Take the top n terms of the top k documents returned by the first pass of the IR and add them to the end of the query.
 
@@ -196,41 +307,30 @@ def pseudo_relevance_loop(query, documents:dict[int, Document], top_documents:li
         documents (dict): A dictionary where the document ID is the key and the Document object is the value.
         top_documents (list): A list of top documents where each index is a tuple of the document ID and the similarity score.
         n: The top number of words to extract from each of the top k documents. By default, 2.
-        k: The top k documents to extract terms from. By default, 2.
+        k: The top k documents to extract terms from. By default, 3.
 
     Returns:
         query (str): The query with more terms appended to it.
     """
     # Split query into words and make it into a set to avoid duplicating terms to add and terms already in the query
-    query = query.split(" ")
+    query = query.lower().split(" ")
     query = set(query)
-
-    terms_to_add = set()
 
     for document in top_documents[:k]:
         _id = document[0]
         index_terms = documents[_id].get_index_terms()
         # Sort the index terms by count
         index_terms = sorted(index_terms.items(), key=lambda item: item[1], reverse=True)
-        
-        # To avoid adding duplicate terms into the query but still adding n terms to the query, continue looping through the index
-        # terms until you find a term that is not already in the query
-        i = 0
-        j = 0
-        while i < n and j < len(index_terms):
-            term = index_terms[j][0]
-            if term not in query:
-                terms_to_add.add(term)
-                i += 1
-                j += 1
-            else:
-                j += 1
+        index_terms = index_terms[:n]
+        index_terms = [term[0] for term in index_terms]
 
-    query = " ".join(query) + " " + " ".join(terms_to_add)
+        query = query.union(set(index_terms))
+
+    query = " ".join(query)
     query = query.strip()
     return query
   
-def process_and_save_results(queries, inv_index, document_vectors, documents, output_file_name="Results", top_n=100, run_tag="run1"):
+def process_and_save_results(queries, inv_index, document_vectors, documents, avg_doc_length, output_file_name="Results", k1=1.2, b=0.75, top_n=100, run_tag="run1"):
     """
     Process queries, rank documents, and save the top results in the required format.
 
@@ -246,6 +346,7 @@ def process_and_save_results(queries, inv_index, document_vectors, documents, ou
     - top_n: Maximum number of top documents to retrieve for each query (default is 100).
     - run_tag: A unique identifier for this run.
     """
+    
     with open(output_file_name, "w") as output_file:
         for query in queries:
             query_id = query['_id']  # Query ID
@@ -253,15 +354,17 @@ def process_and_save_results(queries, inv_index, document_vectors, documents, ou
             
             # print(f"Processing query {query_id}: {query_text}")
             
-            # Rank documents for the query
-            top_documents = rank_documents_for_query(query_text, inv_index, document_vectors, len(documents), top_n=top_n)
+            # # Rank documents for the query
+            # # top_documents = rank_documents_for_query(query_text, inv_index, document_vectors, len(documents), top_n=top_n)
+            # top_documents = bm25_rank_documents_for_query(query_text, inv_index, documents, avg_doc_length, k1=k1, b=b, top_n=top_n)
 
-            # Perform a pseudo-relevance feedback loop
-            print(query_text)
-            query_text = pseudo_relevance_loop(query_text, documents, top_documents)
-            print(query_text)
-            top_documents = rank_documents_for_query(query_text, inv_index, document_vectors, len(documents), top_n=top_n)
-            
+            # # Perform a pseudo-relevance feedback loop
+            # print(query_text)
+            # query_text = pseudo_relevance_loop(query_text, documents, top_documents)
+            # print(query_text)
+            # top_documents = rank_documents_for_query(query_text, inv_index, document_vectors, len(documents), top_n=top_n)
+            top_documents = bm25_rank_documents_for_query(query_text, inv_index, documents, avg_doc_length, k1=k1, b=b, top_n=top_n)
+
             # Write results in the required format
             for rank, (doc_id, score) in enumerate(top_documents, start=1):
                 output_file.write(f"{query_id} Q0 {doc_id} {rank} {score:.6f} {run_tag}\n")
