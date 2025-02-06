@@ -16,9 +16,6 @@ from doc_utils import load_inverted_index_jsonl,load_jsonl, save_inverted_index_
 corpus = load_jsonl('scifact/corpus.jsonl')  # all
 queries = load_jsonl('queries_for_test.jsonl')  # test queries
 
-# Only select the queries with an odd id
-queries = [query for query in queries if int(query["_id"].strip()) % 2 == 1]
-
 documents = {}
 i = 1
 
