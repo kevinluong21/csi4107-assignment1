@@ -16,6 +16,9 @@ from doc_utils import load_inverted_index_jsonl,load_jsonl, save_inverted_index_
 corpus = load_jsonl('scifact/corpus.jsonl')  # all
 queries = load_jsonl('queries_for_test.jsonl')  # test queries
 
+# Only select the queries with an odd id
+queries = [query for query in queries if int(query["_id"].strip()) % 2 == 1]
+
 documents = {}
 i = 1
 
@@ -66,7 +69,7 @@ for _id, document in documents.items():
     document_id = _id
 
     # doc_vector = get_document_vector(document_id, inv_index, len(documents))
-    doc_vector = get_bm25_document_vector(document, inv_index, len(documents), avg_doc_length)
+    doc_vector = get_bm25_document_vector(document, inv_index, len(documents), avg_doc_length, delta=0.25)
 
     document_vectors[document_id] = doc_vector
     
@@ -83,5 +86,6 @@ process_and_save_results(
     output_file_name="bm25_result_for_titles_and_text.txt", 
     k1=1.0,
     b=0.5,
+    delta=0.25,
     top_n=100 
 )

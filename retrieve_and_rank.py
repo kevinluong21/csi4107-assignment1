@@ -33,6 +33,13 @@ def compute_bm25(total_documents, term_freq, doc_freq, doc_length, avg_doc_lengt
     weight = (term_freq * (log((total_documents - doc_freq + 0.5) / (doc_freq + 0.5)))) / ((k1 * ((1 - b) + (b * doc_length / avg_doc_length))) + term_freq)
     return weight
 
+def compute_bm25_plus(total_documents, term_freq, doc_freq, doc_length, avg_doc_length, k1=1.2, b=0.75, delta=1):
+    """
+    Computes the BM25 weighting for a given term.
+    """
+    weight = ((term_freq + delta) * (log((total_documents - doc_freq + 0.5) / (doc_freq + 0.5)))) / ((k1 * ((1 - b) + (b * doc_length / avg_doc_length))) + term_freq)
+    return weight
+
 def get_document_vector(document_id, inverted_index: InvertedIndex, total_documents):
     """
     Generate the document vector (TF-IDF values for all terms in the document).
@@ -69,7 +76,7 @@ def get_document_vector(document_id, inverted_index: InvertedIndex, total_docume
     
     return doc_vector
 
-def get_bm25_document_vector(document: Document, inverted_index: InvertedIndex, total_documents, avg_doc_length, k1=1.2, b=0.75):
+def get_bm25_document_vector(document: Document, inverted_index: InvertedIndex, total_documents, avg_doc_length, k1=1.2, b=0.75, delta=1):
     """
     Tokenize each document using BM25 weighting.
     """
@@ -82,7 +89,7 @@ def get_bm25_document_vector(document: Document, inverted_index: InvertedIndex, 
     for term, term_freq in index_terms.items():
         doc_freq = len(inverted_index.get_postings(term))
 
-        weight = compute_bm25(total_documents, term_freq, doc_freq, doc_length, avg_doc_length, k1=k1, b=b)
+        weight = compute_bm25_plus(total_documents, term_freq, doc_freq, doc_length, avg_doc_length, k1=k1, b=b, delta=delta)
 
         doc_vector[term] = weight
     
@@ -119,13 +126,13 @@ def get_query_vector(query, inverted_index, total_documents):
     
     return query_vector
 
-def get_bm25_query_vector(query: Query, document: Document, inverted_index, total_documents, avg_doc_length, k1=1.2, b=0.75):
+def get_bm25_query_vector(query: Query, document: Document, inverted_index, total_documents, avg_doc_length, k1=1.2, b=0.75, delta=1):
     """
     Tokenize a query vector using BM25 weighting. Each vector is dependent on the document.
     """
     # Tokenize the query and count term frequencies
     query_terms = query.get_index_terms()
-    synonyms = query.get_index_synonyms()
+    # synonyms = query.get_index_synonyms()
 
     # revised_query_terms = set()
 
@@ -140,7 +147,7 @@ def get_bm25_query_vector(query: Query, document: Document, inverted_index, tota
     #             synonym_term_freq = index_terms.get(synonym, 0)
     #             synonym_doc_freq = len(inverted_index.get_postings(synonym))
 
-    #             if synonym_term_freq > 0 and synonym_doc_freq < 5 and synonym not in revised_query_terms:
+    #             if synonym_term_freq > 0 and synonym not in revised_query_terms:
     #                 print(synonym)
     #                 revised_query_terms.remove(term)
     #                 revised_query_terms.add(synonym)
@@ -158,7 +165,7 @@ def get_bm25_query_vector(query: Query, document: Document, inverted_index, tota
         term_freq = index_terms.get(term, 0)
 
         if term_freq > 0:
-            weight = compute_bm25(total_documents, term_freq, doc_freq, doc_length, avg_doc_length, k1=k1, b=b)
+            weight = compute_bm25_plus(total_documents, term_freq, doc_freq, doc_length, avg_doc_length, k1=k1, b=b, delta=delta)
             query_vector[term] = weight
         else:
             query_vector[term] = 0
@@ -254,7 +261,7 @@ def rank_documents_for_query(query, inverted_index, document_vectors, total_docu
 
     return top_documents
 
-def bm25_rank_documents_for_query(query: Query, inverted_index, document_vectors, documents: dict, avg_doc_length, k1=1.2, b=0.75, top_n=10):
+def bm25_rank_documents_for_query(query: Query, inverted_index, document_vectors, documents: dict, avg_doc_length, k1=1.2, b=0.75, delta=1, top_n=10):
     """
     Using BM25 scores, rank the documents for each query.
 
@@ -273,6 +280,8 @@ def bm25_rank_documents_for_query(query: Query, inverted_index, document_vectors
     # Initialize a dictionary to store similarity scores
     similarities = {}
 
+    # TODO: union of the query terms and the inverted index to find the documents that contain at least one query word
+
     for doc_id, document in documents.items():
         # Check if the inverted index contains at least one of the query words
         contains_query_word = False
@@ -283,7 +292,7 @@ def bm25_rank_documents_for_query(query: Query, inverted_index, document_vectors
 
         # If the document contains query words, compute similarity
         if contains_query_word:
-            query_vector = get_bm25_query_vector(query, document, inverted_index, len(documents), avg_doc_length, k1=k1, b=b)
+            query_vector = get_bm25_query_vector(query, document, inverted_index, len(documents), avg_doc_length, k1=k1, b=b, delta=delta)
             similarity = compute_cosine_similarity(query_vector, document_vectors[doc_id])
             if similarity > 0:  # Only consider documents with a non-zero similarity
                 similarities[doc_id] = similarity
@@ -329,7 +338,7 @@ def pseudo_relevance_loop(query: Query, documents:dict[int, Document], top_docum
     query = query.strip()
     return query
   
-def process_and_save_results(queries, inv_index, document_vectors, documents, avg_doc_length, output_file_name="Results", k1=1.2, b=0.75, top_n=100, run_tag="run1"):
+def process_and_save_results(queries, inv_index, document_vectors, documents, avg_doc_length, output_file_name="Results", k1=1.2, b=0.75, delta=1, top_n=100, run_tag="run1"):
     """
     Process queries, rank documents, and save the top results in the required format.
 
@@ -366,7 +375,7 @@ def process_and_save_results(queries, inv_index, document_vectors, documents, av
             # query = Query(_id=query_id, query=query_text)
 
             # Perform a ranking again of the documents
-            top_documents = bm25_rank_documents_for_query(query, inv_index, document_vectors, documents, avg_doc_length, k1=k1, b=b, top_n=top_n)
+            top_documents = bm25_rank_documents_for_query(query, inv_index, document_vectors, documents, avg_doc_length, k1=k1, b=b, delta=delta, top_n=top_n)
 
             # Write results in the required format
             for rank, (doc_id, score) in enumerate(top_documents, start=1):
