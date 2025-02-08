@@ -58,6 +58,7 @@ avg_doc_length = 0
 
 for _id, document in documents.items():
     avg_doc_length += len(document.get_index_terms())
+    #avg_doc_length += len(document.title.split())
 
 avg_doc_length = avg_doc_length / len(documents)
 
@@ -80,7 +81,8 @@ process_and_save_results(
     document_vectors=document_vectors, 
     documents=documents, 
     avg_doc_length=avg_doc_length,
-    output_file_name="bm25_result_for_titles_and_text.txt", 
+    output_file_name="bm25_result_for_titles_and_text.txt",
+    #output_file_name="bm25_result_for_titles.txt"
     k1=1.0,
     b=0.5,
     delta=0.25,
