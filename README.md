@@ -36,8 +36,9 @@ The system calculates similarity scores between the query and each document usin
     make`
     - On MinGW/GCC:
     `gcc -o trec_eval trec_eval.c`
-6. Run the python script `python main.py`
-7. Evaluate results by using trec_eval (you must copy over the scifact/qrels/test.txt and <bm25_result_file> into the same directory as trec_eval)
+6. Install all the necessary dependencies in the `requirements.txt` file using `pip install`.
+7. Run the python script `python main.py`
+8. Evaluate results by using trec_eval (you must copy over the scifact/qrels/test.txt and <bm25_result_file> into the same directory as trec_eval)
 `./trec_eval test.txt <bm25_result_file>`
 Replace <bm25_result_file> with the name of your BM25 result file (e.g., bm25_result_for_titles.txt).
 
