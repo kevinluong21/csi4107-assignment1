@@ -9,7 +9,8 @@
 ## Contributions
 | Member        | Contributions                                                                                                                                                |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Nalan Kurnaz  |                                                                                                                                                              |
+| Nalan Kurnaz  |    - Worked on implementing Inverted Index (indexing.py) <br> - Report writing
+                                                                                                                                                          |
 | Alona Petrova |    - Implementation of retrieve_and_rank and the first version of main.py<br> - Implementation of naive ranking based on the tf-df cosine similarity<br> - Report writing                                                                                                                                                          |
 | Kevin Luong   | - Worked on the pre-processing<br>- Implemented BM25+<br>- Investigate synonym replacement and pseudo-relevance feedback feasibility<br>- Work on report<br> |
 
@@ -33,7 +34,20 @@ The system calculates similarity scores between the query and each document usin
 
 
 ## Get Started/Instructions on how to run the system
-
+1. Install Python: Ensure you have Python installed on your local machine. You can download it from [Python's official website]("https://www.python.org/downloads/").
+2. Download trec_eval: The trec_eval tool can be downloaded from [TREC's official website]("https://trec.nist.gov/trec_eval/index.html").
+3. Extract the trec_eval package: The downloaded file is a .tar archive. Use an extraction tool such as tar (Linux/macOS) or 7-Zip (Windows) to extract it.
+4. Ensure both trec_eval and your code are in the same directory for easier execution.
+5. Compile trec_eval
+    - On POSIX systems:
+    `cd trec_eval-9.0.7 
+    make`
+    - On MinGW/GCC:
+    `gcc -o trec_eval trec_eval.c`
+6. Run the python script `python main.py`
+7. Evaluate results by using trec_eval
+`./trec_eval qrels.test <bm25_result_file>`
+Replace <bm25_result_file> with the name of your BM25 result file (e.g., bm25_result_for_titles.txt).
 
 ## Analysis of Algorithms, Data Structures, and Optimizations
 In this section, we provide information on the algorithms and data structures used. Additionally, we will discuss the optimization steps taken to improve out system.
@@ -210,12 +224,23 @@ It important to note, that the absence of a match for Query 1 may be due to the 
 For Query 3, although several documents overlap (e.g., IDs 2739854, 14717500, 4632921, 32181055, and 19058822), the ranking order differs, and some documents retrieved using only titles were not retrieved using title + text. Notably, the actual relevant document (ID: 14717500) ranked higher in the title-only approach (3rd place) than in the title + text approach (9th place), suggesting that relying on titles may improve precision in some cases.
 
 ### Vocabulary
-TODO
-### Output
-TODO
-### Evaluation: Mean Average Precision (MAP)
+
+The vocabulary of dataset contains 31605 unique tokens extracted from the indexed documents. The vocabulary was generated after preprocessing steps such as tokenization, stopword removal and case normalization. 
+
+The sample of 100 tokens from our vocabulary is shown below: 
+['microstructural', 'development', 'human', 'newborn', 'cerebral', 'white', 'matter', 'assessed', 'vivo', 'diffusion', 'tensor', 'magnetic', 'resonance', 'imaging', 'alteration', 'architecture', 'developing', 'brain', 'affect', 'cortical', 'result', 'functional', 'disability', 'line', 'scan', 'weighted', 'mri', 'sequence', 'analysis', 'applied', 'measure', 'apparent', 'coefficient', 'calculate', 'relative', 'anisotropy','delineate', 'three', 'dimensional', 'fiber', 'preterm', 'n', 'full', 'term', 'infant', 'assess', 'effect', 'prematurity', 'early', 'gestation', 'studied', 'second', 'time', 'central', 'mean', 'wk', 'high', 'microm', 'm', 'decreased', 'toward', 'posterior', 'limb', 'internal', 'capsule', 'similar', 'versus', 'higher', 'closer', 'birth', 'greater', 'absolute', 'value', 'showed', 'p', 'lower', 'area', 'compared', 'nonmyelinated', 'corpus', 'callosum', 'visible', 'marked', 'difference', 'organization', 'data', 'indicate', 'quantitative', 'assessment', 'water', 'provides', 'insight', 'living', 'induction', 'myelodysplasia', 'myeloid', 'derived', 'suppressor', 'cell', 'myelodysplastic']
+
+In this part, we have extracted the 100 most frequent tokens from vocabulary. These tokens seem related to medical and scientific fields especially focusing on brain development, diffusion MRI scans and neuroscience-related research. For instance, we can see words like 'cerebral', 'white matter' and diffusion’, and ‘tensor’ are commonly found in medical literature. On the other hand, words like 'analysis' or 'quantitative' would refer to statistical evaluations. One of the observations from the extracted vocabulary is that stopwords (e.g.'the','is' or 'and') don't appear in the list, meaning that proper preprocessing techniques were implemented. Also, all words appear to be in lowercase, indicating that text normalization was performed to make sure tokenization is consistent. However, there are some tokens such as 'microm', 'p' and 'm' that require further verification, as their significance in the dataset is unclear. In other words, it could be measurement unit or abbreviation; therefore, it should be verified for accuracy. 
+
+### Output && Evaluation: Mean Average Precision (MAP)
 TODO: DISCUSSION
 | Document Content | MAP (BM25+) |
 | ---------------- | ----------- |
-| Titles           |  0.2809            |
+| Titles           |  0.2809     |
 | Titles + Text    | 0.5634      |
+
+The effect if evaluating more queries are observed in the BM25+ MAP (Mean Average Precision) scores which are calculated for both titles only queries, and titles and text queries. When evaluating only titles, the MAP score was 0.2809, whereas assessing with both titles and full text increased the MAP score to 0.5634. This means that full-text indexing enhances document retrieval performance compared to queries with only titles. One of the reasons for this improvement is that titles are short and concise, and they don't provide much context for BM25+ to find relevant matches. However, full documents have more vocabulary and detailed description, leading BM25+ to have more accurate result in term frequency and inverse document frequency in the ranking of documents. Also, full-text indexing increases the probability of matching queries with relevant terms since it has more opportunity to have term overlap and semantic variations. Therefore, when there is more context retrieval performance improves.
+
+### Conclusion
+
+In summary, the extracted vocabulary we obtained has more context in medical and scientific terms. Observations from the vocabulary confirm that preprocessing techniques such as stopword removal and lowercase normalization were successfully applied. The BM25+ MAP score difference refers that the full-text indexing leads to better document ranking and retrieval performance as it provides more contextual information. 
