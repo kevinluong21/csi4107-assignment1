@@ -9,9 +9,8 @@
 ## Contributions
 | Member        | Contributions                                                                                                                                                |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Nalan Kurnaz  |    - Worked on implementing Inverted Index (indexing.py) <br> - Report writing
-                                                                                                                                                          |
-| Alona Petrova |    - Implementation of retrieve_and_rank and the first version of main.py<br> - Implementation of naive ranking based on the tf-df cosine similarity<br> - Report writing                                                                                                                                                          |
+| Nalan Kurnaz  |    - Worked on implementing Inverted Index (indexing.py)<br> - Report writing                                                                               |
+| Alona Petrova |    - Implementation of retrieve_and_rank and the first version of main.py<br> - Implementation of naive ranking based on the tf-df cosine similarity<br> - Report writing |
 | Kevin Luong   | - Worked on the pre-processing<br>- Implemented BM25+<br>- Investigate synonym replacement and pseudo-relevance feedback feasibility<br>- Work on report<br> |
 
 ## Functionality
