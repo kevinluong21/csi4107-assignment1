@@ -15,22 +15,15 @@
 
 ## Functionality
 Our Information Retrieval (IR) system is designed to retrieve and rank documents based on a given query. The system follows these key steps:
-
 ##### Preprocessing
-
 Documents undergo tokenization, stopword removal, and stemming/lemmatization to standardize terms.
 
-
 ##### Indexing Phase
-
 An inverted index is built, mapping terms to document IDs along with their term frequencies.
 
-
 ##### Ranking and Retrieval
-
 The input query is preprocessed similarly to the documents (tokenization, stopword removal, stemming).
 The system calculates similarity scores between the query and each document using BM25+ scoring. It then sorts the documents based on their scores and returns the top 100 most relevant documents.
-
 
 ## Get Started/Instructions on how to run the system
 1. Install Python: Ensure you have Python installed on your local machine. You can download it from [Python's official website]("https://www.python.org/downloads/").
@@ -44,13 +37,12 @@ The system calculates similarity scores between the query and each document usin
     - On MinGW/GCC:
     `gcc -o trec_eval trec_eval.c`
 6. Run the python script `python main.py`
-7. Evaluate results by using trec_eval
-`./trec_eval qrels.test <bm25_result_file>`
+7. Evaluate results by using trec_eval (you must copy over the scifact/qrels/test.txt and <bm25_result_file> into the same directory as trec_eval)
+`./trec_eval test.txt <bm25_result_file>`
 Replace <bm25_result_file> with the name of your BM25 result file (e.g., bm25_result_for_titles.txt).
 
 ## Analysis of Algorithms, Data Structures, and Optimizations
 In this section, we provide information on the algorithms and data structures used. Additionally, we will discuss the optimization steps taken to improve out system.
-
 ### Algorithms
 #### Pre-processing
 To extract index terms and count term frequencies, the algorithm follows:
@@ -96,7 +88,6 @@ $$
 \text{weight} = \frac{( \text{term\_freq} + \delta ) \times \log\left(\frac{\text{total\_documents} - \text{doc\_freq} + 0.5}{\text{doc\_freq} + 0.5} \right)}
 {(k_1 \times ((1 - b) + (b \times \text{doc\_length} / \text{avg\_doc\_length}))) + \text{term\_freq}}
 $$
-
 
 ### Data Structures
 #### Pre-processing
@@ -146,99 +137,98 @@ In this experiment, we constructed an inverted index using both the title and te
 **Query 3**: "1,000 genomes project enables mapping of genetic sequence variation consisting of rare variants with larger penetrance effects than common variants."
 
 ### Results for Query 1: top 10 docs
-| Query ID | Q0 | Document ID | Rank | Similarity Score | Run |
-|----------|----|-------------|------|------------------|-----|
-| 1        | Q0 | 24998637    | 1    | 0.183226         | run1 |
-| 1        | Q0 | 13231899    | 2    | 0.179567         | run1 |
-| 1        | Q0 | 10931595    | 3    | 0.155855         | run1 |
-| 1        | Q0 | 31543713    | 4    | 0.151430         | run1 |
-| 1        | Q0 | 803312      | 5    | 0.150338         | run1 |
-| 1        | Q0 | 16939583    | 6    | 0.146881         | run1 |
-| 1        | Q0 | 10607877    | 7    | 0.137585         | run1 |
-| 1        | Q0 | 9580772     | 8    | 0.137558         | run1 |
-| 1        | Q0 | 25404036    | 9    | 0.136318         | run1 |
-| 1        | Q0 | 20758340    | 10   | 0.133855         | run1 |
+| Query ID | Q0  | Document ID | Rank | Similarity Score | Run  |
+| -------- | --- | ----------- | ---- | ---------------- | ---- |
+| 1        | Q0  | 24998637    | 1    | 0.193820         | run1 |
+| 1        | Q0  | 13231899    | 2    | 0.191900         | run1 |
+| 1        | Q0  | 10931595    | 3    | 0.168496         | run1 |
+| 1        | Q0  | 9580772     | 4    | 0.160966         | run1 |
+| 1        | Q0  | 16939583    | 5    | 0.160644         | run1 |
+| 1        | Q0  | 803312      | 6    | 0.160289         | run1 |
+| 1        | Q0  | 31543713    | 7    | 0.159871         | run1 |
+| 1        | Q0  | 17123657    | 8    | 0.148462         | run1 |
+| 1        | Q0  | 10607877    | 9    | 0.148276         | run1 |
+| 1        | Q0  | 20758340    | 10   | 0.146422         | run1 |
 
 ### Result for Query 3: top 10 documents
-| Query ID | Q0 | Document ID | Rank | Similarity Score | Run |
-|----------|----|-------------|------|------------------|-----|
-| 3        | Q0 | 2739854     | 1    | 0.326879         | run1 |
-| 3        | Q0 | 39661951    | 2    | 0.305543         | run1 |
-| 3        | Q0 | 4632921     | 3    | 0.255941         | run1 |
-| 3        | Q0 | 23389795    | 4    | 0.255034         | run1 |
-| 3        | Q0 | 19058822    | 5    | 0.241735         | run1 |
-| 3        | Q0 | 32181055    | 6    | 0.239250         | run1 |
-| 3        | Q0 | 1544804     | 7    | 0.235805         | run1 |
-| 3        | Q0 | 1067605     | 8    | 0.227761         | run1 |
-| 3        | Q0 | 14717500    | 9    | 0.227376         | run1 |
-| 3        | Q0 | 4414547     | 10   | 0.224811         | run1 |
+| Query ID | Q0  | Document ID | Rank | Similarity Score | Run  |
+| -------- | --- | ----------- | ---- | ---------------- | ---- |
+| 3        | Q0  | 2739854     | 1    | 0.355093         | run1 |
+| 3        | Q0  | 39661951    | 2    | 0.323758         | run1 |
+| 3        | Q0  | 19058822    | 3    | 0.317263         | run1 |
+| 3        | Q0  | 4632921     | 4    | 0.288806         | run1 |
+| 3        | Q0  | 23389795    | 5    | 0.276622         | run1 |
+| 3        | Q0  | 4378885     | 6    | 0.273045         | run1 |
+| 3        | Q0  | 1544804     | 7    | 0.267283         | run1 |
+| 3        | Q0  | 17702490    | 8    | 0.261034         | run1 |
+| 3        | Q0  | 4414547     | 9    | 0.259740         | run1 |
+| 3        | Q0  | 1067605     | 10   | 0.254098         | run1 |
 
-For Query 1, the highest-ranked document (ID: 24998637) has a similarity score of 0.183226, indicating it is the most relevant match.
+For Query 1, the highest-ranked document (ID: 24998637) has a similarity score of 0.193820, indicating it is the most relevant match.
 However, the actual document the query originates from (ID: 31715818) was not found in the top 10 results. Further investigation showed that it was not included in the top 100 retrieved documents for Query 1. 
 
-For Query 3, the top-ranked document (ID: 2739854) has a similarity score of 0.326879, making it the most relevant result for this query.
-However, the actual matching document according to test.tsv (ID: 14717500) was ranked 9th by our system 
+For Query 3, the top-ranked document (ID: 2739854) has a similarity score of 0.355093, making it the most relevant result for this query.
+However, the actual matching document according to test.tsv (ID: 14717500) was ranked 13th by our system 
 
 ## RUN 2: Only title
 In this run, we used only title for inverted index and retrieved the ranking for all the test queries. The top 10 documents with similarity scores are provided for queries 1 and 3. The rest of the ranking data can be found in `bm25_result_for_titles.txt`
 ### Results for Query 1: Top 10 Documents  
 
-| Query ID | Q0 | Document ID | Rank | Similarity Score | Run  |
-|----------|----|-------------|------|------------------|------|
-| 1        | Q0 | 10607877    | 1    | 0.188689         | run1 |
-| 1        | Q0 | 10608397    | 2    | 0.180233         | run1 |
-| 1        | Q0 | 31543713    | 3    | 0.179649         | run1 |
-| 1        | Q0 | 25404036    | 4    | 0.168951         | run1 |
-| 1        | Q0 | 16939583    | 5    | 0.159506         | run1 |
-| 1        | Q0 | 10906636    | 6    | 0.158398         | run1 |
-| 1        | Q0 | 803312      | 7    | 0.154513         | run1 |
-| 1        | Q0 | 9580772     | 8    | 0.149569         | run1 |
-| 1        | Q0 | 13231899    | 9    | 0.148122         | run1 |
-| 1        | Q0 | 24998637    | 10   | 0.147672         | run1 |
+| Query ID | Q0  | Document ID | Rank | Similarity Score | Run  |
+| -------- | --- | ----------- | ---- | ---------------- | ---- |
+| 1        | Q0  | 4459491     | 1    | 0.511560         | run2 |
+| 1        | Q0  | 25950264    | 2    | 0.473070         | run2 |
+| 1        | Q0  | 10029970    | 3    | 0.451824         | run2 |
+| 1        | Q0  | 18953920    | 4    | 0.436798         | run2 |
+| 1        | Q0  | 9580772     | 5    | 0.426131         | run2 |
+| 1        | Q0  | 25404036    | 6    | 0.393896         | run2 |
+| 1        | Q0  | 11674288    | 7    | 0.382282         | run2 |
+| 1        | Q0  | 31543713    | 8    | 0.359190         | run2 |
+| 1        | Q0  | 38037690    | 9    | 0.345779         | run2 |
+| 1        | Q0  | 15593561    | 10   | 0.344601         | run2 |
 
 ### Results for Query 3: Top 10 Documents  
 
-| Query ID | Q0 | Document ID | Rank | Similarity Score | Run  |
-|----------|----|-------------|------|------------------|------|
-| 3        | Q0 | 23389795    | 1    | 0.403542         | run1 |
-| 3        | Q0 | 2739854     | 2    | 0.402635         | run1 |
-| 3        | Q0 | 14717500    | 3    | 0.324996         | run1 |
-| 3        | Q0 | 4632921     | 4    | 0.317768         | run1 |
-| 3        | Q0 | 4378885     | 5    | 0.287216         | run1 |
-| 3        | Q0 | 16398049    | 6    | 0.285551         | run1 |
-| 3        | Q0 | 14019636    | 7    | 0.284710         | run1 |
-| 3        | Q0 | 3672261     | 8    | 0.278625         | run1 |
-| 3        | Q0 | 32181055    | 9    | 0.274921         | run1 |
-| 3        | Q0 | 19058822    | 10   | 0.266853         | run1 |
+| Query ID | Q0  | Document ID | Rank | Similarity Score | Run  |
+| -------- | --- | ----------- | ---- | ---------------- | ---- |
+| 3        | Q0  | 2739854     | 1    | 0.792977         | run2 |
+| 3        | Q0  | 23389795    | 2    | 0.710271         | run2 |
+| 3        | Q0  | 14717500    | 3    | 0.672403         | run2 |
+| 3        | Q0  | 4421746     | 4    | 0.569425         | run2 |
+| 3        | Q0  | 52850476    | 5    | 0.538769         | run2 |
+| 3        | Q0  | 6077214     | 6    | 0.533804         | run2 |
+| 3        | Q0  | 13519661    | 7    | 0.522262         | run2 |
+| 3        | Q0  | 10279084    | 8    | 0.521175         | run2 |
+| 3        | Q0  | 17088791    | 9    | 0.518665         | run2 |
+| 3        | Q0  | 4378885     | 10   | 0.515995         | run2 |
 
-For Query 1, the highest-ranked document (ID: 10607877) has a similarity score of 0.188689, but the actual document (ID: 31715818) was not found in the top 10 or even the top 100 retrieved documents.
+For Query 1, the highest-ranked document (ID: 4459491) has a similarity score of 0.511560, but the actual document (ID: 31715818) was not found in the top 10 or even the top 100 retrieved documents.
 
-For Query 3, the top-ranked document (ID: 23389795) has a similarity score of 0.403542, while the actual matching document (ID: 14717500) was ranked 3rd by our system.
+For Query 3, the top-ranked document (ID: 2739854) has a similarity score of 0.792977, while the actual matching document (ID: 14717500) was ranked 3rd by our system.
 
 For Query 1, neither approach retrieved the actual document in the top 10, indicating that title and text indexing may not capture its relevance effectively.
-For Query 1, while some documents appear in both lists (e.g., IDs 31543713, 25404036, 16939583, 803312, 9580772, 13231899, and 24998637), others are unique to each method. This suggests that using only titles retrieved different documents that were not picked up when using both title and text. 
+For Query 1, while some documents appear in both lists (e.g., IDs 31543713, 9580772), others are unique to each method. This suggests that using only titles retrieved different documents that were not picked up when using both title and text. 
 
-It's important to note, that the absence of a match for Query 1 may be due to the short query length and lack of exact term overlap with the document, as searching word by word didn’t yield matches. The document may also use different terminology or phrasing, making it harder for the retrieval system to establish relevance.
+It important to note, that the absence of a match for Query 1 may be due to the short query length and lack of exact term overlap with the document, as searching word by word did not yield matches. The document may also use different terminology or phrasing, making it harder for the retrieval system to establish relevance.
 
-For Query 3, although several documents overlap (e.g., IDs 2739854, 14717500, 4632921, 32181055, and 19058822), the ranking order differs, and some documents retrieved using only titles were not retrieved using title + text. Notably, the actual relevant document (ID: 14717500) ranked higher in the title-only approach (3rd place) than in the title + text approach (9th place), suggesting that relying on titles may improve precision in some cases.
+For Query 3, although several documents overlap (e.g., IDs 2739854, 23389795, 4378885), the ranking order differs, and some documents retrieved using only titles were not retrieved using title + text. Notably, the actual relevant document (ID: 14717500) ranked higher in the title-only approach (3rd place) than in the title + text approach (13th place), suggesting that relying on titles may improve precision in some cases.
 
 ### Vocabulary
 
 The vocabulary of dataset contains 31605 unique tokens extracted from the indexed documents. The vocabulary was generated after preprocessing steps such as tokenization, stopword removal and case normalization. 
 
-The sample of 100 tokens from our vocabulary is shown below: 
-['microstructural', 'development', 'human', 'newborn', 'cerebral', 'white', 'matter', 'assessed', 'vivo', 'diffusion', 'tensor', 'magnetic', 'resonance', 'imaging', 'alteration', 'architecture', 'developing', 'brain', 'affect', 'cortical', 'result', 'functional', 'disability', 'line', 'scan', 'weighted', 'mri', 'sequence', 'analysis', 'applied', 'measure', 'apparent', 'coefficient', 'calculate', 'relative', 'anisotropy','delineate', 'three', 'dimensional', 'fiber', 'preterm', 'n', 'full', 'term', 'infant', 'assess', 'effect', 'prematurity', 'early', 'gestation', 'studied', 'second', 'time', 'central', 'mean', 'wk', 'high', 'microm', 'm', 'decreased', 'toward', 'posterior', 'limb', 'internal', 'capsule', 'similar', 'versus', 'higher', 'closer', 'birth', 'greater', 'absolute', 'value', 'showed', 'p', 'lower', 'area', 'compared', 'nonmyelinated', 'corpus', 'callosum', 'visible', 'marked', 'difference', 'organization', 'data', 'indicate', 'quantitative', 'assessment', 'water', 'provides', 'insight', 'living', 'induction', 'myelodysplasia', 'myeloid', 'derived', 'suppressor', 'cell', 'myelodysplastic']
+The sample of the top 100 most frequent tokens from our vocabulary is shown below: 
+'cell', 'result', 'study', 'increase', 'protein', 'suggest', 'factor', 'associate', 'gene', 'role', 'expression', 'human', 'control', 'disease', 'effect', 'function', 'patient', 'data', 'level', 'identify', 'mechanism', 'conclusion', 'induce', 'method', 'analysis', 'model', 'response', 'specific', 'demonstrate', 'type', 'activity', 'treatment', 'compare', 'target', 'development', 'signal', 'cancer', 'reduce', 'require', 'regulate', 'report', 'process', 'base', 'pathway', 'receptor', 'significantly', 'change', 'finding', 'indicate', 'involve', 'present', 'risk', 'cause', 'potential', 'remain', 'age', 'clinical', 'mice', 'activation', 'determine', 'reveal', 'system', 'complex', 'relate', 'group', 'evidence', 'population', 'develop', 'tissue', 'bind', 'measure', 'express', 'number', 'mediate', 'observe', 'year', 'form', 'dna', 'decrease', 'know', 'growth', 'vivo', 'dependent', 'background', 'review', 'outcome', 'tumor', 'objective', 'early', 'lead', 'regulation', 'investigate', 'test', 'activate', 'interaction', 'occur', 'cellular', 'molecular', 'design', 'major'
 
-In this part, we have extracted the 100 most frequent tokens from vocabulary. These tokens seem related to medical and scientific fields especially focusing on brain development, diffusion MRI scans and neuroscience-related research. For instance, we can see words like 'cerebral', 'white matter', 'diffusion’ and ‘tensor’ are commonly found in medical literature. On the other hand, words like 'analysis' or 'quantitative' would refer to statistical evaluations. One of the observations from the extracted vocabulary is that stopwords (e.g.'the','is' or 'and') don't appear in the list, meaning that proper preprocessing techniques were implemented. Also, all words appear to be in lowercase, indicating that text normalization was performed to make sure tokenization is consistent. However, there are some tokens such as 'microm', 'p' and 'm' that require further verification, since their meaning in the dataset is unclear. In other words, it could be measurement unit or abbreviation; therefore, it should be verified for accuracy. 
+In this part, we have extracted the 100 most frequent tokens from vocabulary. These tokens seem related to medical and scientific fields especially focusing on brain development, diffusion MRI scans and neuroscience-related research. For instance, we can see words like ' cell', 'protein', gene’, and ‘disease’ are commonly found in medical literature. On the other hand, words like 'analysis' or 'model' would refer to statistical evaluations. One of the observations from the extracted vocabulary is that stop words (e.g.'the', 'is' or 'and') don't appear in the list, meaning that proper preprocessing techniques were implemented. Also, all words appear to be in lowercase, indicating that text normalization was performed to make sure tokenization is consistent.
 
-### Output && Evaluation: Mean Average Precision (MAP)
+### Output & Evaluation: Mean Average Precision (MAP)
 | Document Content | MAP (BM25+) |
 | ---------------- | ----------- |
-| Titles           |  0.2809     |
-| Titles + Text    | 0.5634      |
+| Titles           | 0.2958      |
+| Titles + Text    | 0.5485      |
 
-The effect of evaluating more queries are observed in the BM25+ MAP (Mean Average Precision) scores which are calculated for both titles only queries, and titles and text queries. When evaluating only titles, the MAP score was 0.2809, whereas assessing with both titles and full text increased the MAP score to 0.5634. This means that full-text indexing enhances document retrieval performance compared to queries with only titles. One of the reasons for this improvement is that titles are short and concise, and they don't provide much context for BM25+ to find relevant matches. However, full documents have more vocabulary and detailed description, leading BM25+ to have more accurate result in term frequency and inverse document frequency in the ranking of documents. Also, full-text indexing increases the probability of matching queries with relevant terms since it is likely to have term overlap and semantic variations. Therefore, having more contextual information improves retrieval performance.
+The effect of evaluating more queries are observed in the BM25+ MAP (Mean Average Precision) scores which are calculated for both titles only queries, and titles and text queries. When evaluating only titles, the MAP score was 0.2938, whereas assessing with both titles and full text increased the MAP score to 0.5485. This means that full-text indexing enhances document retrieval performance compared to queries with only titles. One of the reasons for this improvement is that titles are short and concise, and they don't provide much context for BM25+ to find relevant matches. However, full documents have more vocabulary and detailed description, leading BM25+ to have more accurate result in term frequency and inverse document frequency in the ranking of documents. Also, full-text indexing increases the probability of matching queries with relevant terms since it has more opportunity to have term overlap and semantic variations. Therefore, having more contextual information improves retrieval performance.
 
 ### Conclusion
-
-In summary, the extracted vocabulary we obtained has more context in medical and scientific terms. Observations from the vocabulary confirm that preprocessing techniques such as stopword removal and lowercase normalization were successfully applied. The BM25+ MAP score difference refers that the full-text indexing leads to better document ranking and retrieval performance as it provides more contextual information. 
+In summary, the extracted vocabulary we obtained has more context in medical and scientific terms. Observations from the vocabulary confirm that preprocessing techniques such as stop word removal and lowercase normalization were successfully applied. The BM25+ MAP score difference refers that the full-text indexing leads to better document ranking and retrieval performance as it provides more contextual information. 
