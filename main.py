@@ -40,44 +40,38 @@ def rank_documents_with_titles_and_text():
         save_inverted_index_jsonl(inv_index, index_file_path)
         print("Saved new inverted index.")
 
-    index = list(inv_index.index.items())
-    index = [(term[0], len(term[1])) for term in index]
-    index = sorted(index, key=lambda term: term[1], reverse=True)
-    index = [term[0] for term in index]
-    print(index[:100])
+    document_vectors = {}
 
-    # document_vectors = {}
+    # Calculate the average document length
+    avg_doc_length = 0
 
-    # # Calculate the average document length
-    # avg_doc_length = 0
+    for _id, document in documents.items():
+        avg_doc_length += len(document.get_index_terms())
 
-    # for _id, document in documents.items():
-    #     avg_doc_length += len(document.get_index_terms())
+    avg_doc_length = avg_doc_length / len(documents)
 
-    # avg_doc_length = avg_doc_length / len(documents)
+    for _id, document in documents.items():
 
-    # for _id, document in documents.items():
+        document_id = _id
 
-    #     document_id = _id
+        # doc_vector = get_document_vector(document_id, inv_index, len(documents))
+        doc_vector = get_bm25_document_vector(document, inv_index, len(documents), avg_doc_length, delta=0.25)
 
-    #     # doc_vector = get_document_vector(document_id, inv_index, len(documents))
-    #     doc_vector = get_bm25_document_vector(document, inv_index, len(documents), avg_doc_length, delta=0.25)
+        document_vectors[document_id] = doc_vector
 
-    #     document_vectors[document_id] = doc_vector
-
-    # process_and_save_results(
-    #     queries=queries, 
-    #     inv_index=inv_index, 
-    #     document_vectors=document_vectors, 
-    #     documents=documents, 
-    #     avg_doc_length=avg_doc_length,
-    #     output_file_name="bm25_result_for_titles_and_text.txt",
-    #     k1=1.8,
-    #     b=1.0,
-    #     delta=1.0,
-    #     top_n=100,
-    #     run_tag="run1" 
-    # )
+    process_and_save_results(
+        queries=queries, 
+        inv_index=inv_index, 
+        document_vectors=document_vectors, 
+        documents=documents, 
+        avg_doc_length=avg_doc_length,
+        output_file_name="bm25_result_for_titles_and_text.txt",
+        k1=1.8,
+        b=1.0,
+        delta=1.0,
+        top_n=100,
+        run_tag="run1" 
+    )
 
 def rank_documents_with_titles():
     print("Retrieving and ranking documents (using only titles)...")
@@ -143,4 +137,4 @@ def rank_documents_with_titles():
     )
 
 rank_documents_with_titles_and_text()
-# rank_documents_with_titles()
+rank_documents_with_titles()
