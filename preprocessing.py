@@ -249,21 +249,8 @@ class Query(RetrievalItem):
 
         super().__init__(self.query, _id)
 
-        self.index_synonyms = {}
-
     def get_query(self):
         return self.query
-    
-    def get_index_synonyms(self):
-        """
-        Returns the synonyms for every index term using WordNet.
-
-        Parameters:
-            None
-        Returns:
-            index_synonyms (dict): A dictionary containing index terms as keys and all of its synonyms as values.
-        """
-        return self.index_synonyms
 
     def __repr__(self):
         return f"Query(id={self._id}, query={self.query}, index={self.index_terms}, synonyms={self.index_synonyms})"
