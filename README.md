@@ -87,7 +87,7 @@ $$
 
 ### Data Structures
 #### Pre-processing
-For the documents and queries, we created a parent class called RetrievalItem and had a class Document and Query inherit that class. By doing this, we only needed to define variables like IDs and text/queries once and functions like extracting index terms once. At initialization of a new document of query, all of the information pertaining to its ID, text content, and index terms with its term frequency are all stored in the object, so we do not need to compute the index terms and term frequency each time. Furthermore, this will facilitate creating and indexing an inverted index because the terms and term frequencies will always be stored within the object.
+For the documents and queries, we created a parent class called RetrievalItem and had a class Document and Query inherit that class. By doing this, we only needed to define variables like IDs and text/queries once. At initialization of a new document of query, all of the information pertaining to its ID, text content, and index terms with its term frequency are all stored in the object, so we do not need to compute the index terms and term frequency each time. Furthermore, this will facilitate creating and indexing an inverted index because the terms and term frequencies will always be stored within the object.
 
 To store the index terms within each Document and Query object, the index terms are stored as a dictionary in which the key is the index term and the value is the term frequency for the document/query.
 
@@ -217,5 +217,5 @@ TODO
 TODO: DISCUSSION
 | Document Content | MAP (BM25+) |
 | ---------------- | ----------- |
-| Titles           |             |
+| Titles           |  0.2809            |
 | Titles + Text    | 0.5634      |
